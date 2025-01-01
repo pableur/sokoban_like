@@ -44,3 +44,9 @@ var level_4 = [
 
 var levels = [level_1, level_2, level_3, level_4];
 var current_level = 0;
+var solutions = [
+    '<<',
+    '^^^<v<vv',
+    '^^^<<<vv>^>vv>v<',
+    '<<^>>>^>vvv^^<<vvv>>'
+];

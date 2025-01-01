@@ -33,8 +33,6 @@ function move_hero(vector){
     let next_pos = hero.add(vector);
     let check_empty_pos = next_pos.add(vector)
 
-    console.log('Move hero current_pos '+hero+' next pos ' + next_pos);
-    console.log('check '+check_empty_pos);
     if(map.get(next_pos) == '#')
         return;
 
@@ -62,6 +60,7 @@ function init_game(grid){
     end_points = [];
 
     map_element.innerHTML = '';
+    document.getElementById('user_input').textContent = '';
 
     for (let y = 0; y < map.height; y++) {
         for (let x = 0; x < map.width; x++) {
@@ -109,6 +108,41 @@ function init_game(grid){
     game_element.appendChild(hero_element);
 }
 
+function load_solution(solution){
+    run_manual_inputs(solution.split(''), 0);
+}
+
+function run_manual_inputs(inputs, step){
+    if(in_animation){
+        setTimeout(run_manual_inputs, 100, inputs, step);
+        return;
+    }
+    let input = inputs[step];
+    console.log('input '+input);
+    switch(input){
+        case "^":
+            hero_direction = 'up';
+            move_hero(new Position(0, -1));
+            break;
+        case "v":
+            hero_direction = 'down';
+            move_hero(new Position(0, 1));
+            break;
+        case "<":
+            hero_direction = 'left';
+            move_hero(new Position(-1, 0));
+            break;
+        case ">":
+            hero_direction = 'right';
+            move_hero(new Position(1, 0));
+            break;
+        default:
+            console.log('Key pressed '+keyName)
+    }
+    if(step < inputs.length)
+        setTimeout(run_manual_inputs, 100, inputs, step+1);
+}
+
 var game_element = document.getElementById("game");
 var map_element = document.getElementById("map");
 
@@ -130,13 +164,21 @@ var hero_assets = {
     'down': ['assets/Character5.png', 'assets/Character6.png']
 }
 
+for (const level of levels) {
+    let level_document = document.getElementById('levels');
+    let index = levels.indexOf(level);
+    level_document.innerHTML += '<button onclick="current_level='+index+'; init_game(levels['+index+'])">Level '+index+'</button>';
+    level_document.innerHTML += '<button onclick="current_level='+index+'; init_game(levels['+index+']); load_solution(solutions['+index+'])">Solution '+index+'</button>';
+    level_document.innerHTML += '</br>';
+}
+
 var hero_assets_index = 0;
 init_game(level_1);
 
 function animation() {
-    hero_assets_index = (hero_assets_index + 1) % 2
-    let hero = document.getElementById('hero')
-    hero.src = hero_assets[hero_direction][hero_assets_index]
+    hero_assets_index = (hero_assets_index + 1) % 2;
+    let hero = document.getElementById('hero');
+    hero.src = hero_assets[hero_direction][hero_assets_index];
 
     setTimeout(animation, 100)
 }
@@ -158,14 +200,16 @@ function animate_move(element, x, y, delta_x, delta_y){
         let new_y = parseInt(element.style.top) + delta_y * direction;
         element.style.top = new_y + 'px';
     }
-    console.log('animate move '+element.style.left+' '+element.style.top);
-    console.log('target '+x+' '+y);
 
     if(parseInt(element.style.left) == x && parseInt(element.style.top) == y){
         in_animation = false;
         return;
     }
     setTimeout(animate_move, 20, element, x, y, delta_x, delta_y);
+}
+
+function add_user_input(input){
+    document.getElementById('user_input').textContent += input;
 }
 
 animation();
@@ -179,18 +223,22 @@ document.addEventListener(
         switch(keyName){
             case "ArrowUp":
                 hero_direction = 'up';
+                add_user_input('^');
                 move_hero(new Position(0, -1));
                 break;
             case "ArrowDown":
                 hero_direction = 'down';
+                add_user_input('v');
                 move_hero(new Position(0, 1));
                 break;
             case "ArrowLeft":
                 hero_direction = 'left';
+                add_user_input('<');
                 move_hero(new Position(-1, 0));
                 break;
             case "ArrowRight":
                 hero_direction = 'right';
+                add_user_input('>');
                 move_hero(new Position(1, 0));
                 break;
             default:
@@ -208,6 +256,7 @@ const buttonClose = document.querySelector("#buttonClose");
 const buttonCloseX = document.querySelector("#buttonCloseX");
 const result = document.querySelector("#result");
 const buttonRetry = document.querySelector("#buttonRetry");
+const submit_user_input = document.querySelector("#submit_user_input");
 
 
 function handleClose() {
@@ -225,6 +274,13 @@ buttonOk.addEventListener("click", () => {
 buttonRetry.addEventListener("click", () => {
     init_game(levels[current_level]);
   });
+
+
+submit_user_input.addEventListener("click", () => {
+    inputs = document.getElementById('manual_user_input').value;
+    inputs = inputs.split('');
+    run_manual_inputs(inputs, 0);
+});
 
 // button2
 buttonClose.addEventListener("click", () => {
