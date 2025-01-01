@@ -3,7 +3,7 @@ var grid = [
     ['#','.','E','.','.','.','.','#'],
     ['#','C','C','.','.','.','.','#'],
     ['#','.','C','.','.','.','.','#'],
-    ['#','E','.','.','H','.','.','#'],
+    ['#','E','.','.','H','#','.','#'],
     ['#','.','E','.','.','.','.','#'],
     ['#','.','.','.','.','.','.','#'],
     ['#','#','#','#','#','#','#','#'],
@@ -42,34 +42,25 @@ function move_hero(vector){
 
     console.log('Move hero current_pos '+hero+' next pos ' + next_pos);
     console.log('check '+check_empty_pos);
-    if(map.get(next_pos) == '#'){
-        console.log('Hitt wall');
+    if(map.get(next_pos) == '#')
         return;
-    }
 
     let hitted_crate = hitt_crate(next_pos);
     if(hitted_crate !== false){
-        console.log(crates)
-        console.log('Hitt crate '+ hitted_crate+' at '+next_pos);
-        console.log('Empty ?'+hitt_crate(check_empty_pos));
         if(map.get(check_empty_pos) == '#'){
             return;
         }else if(hitt_crate(check_empty_pos) !== false){
-            console.log('not empty');
             return;
         }
         else{
-            console.log('Move crate '+hitted_crate+' to '+check_empty_pos);
             crates[hitted_crate] = check_empty_pos;
-            document.getElementById("crate_" + hitted_crate).style.left = 64*crates[hitted_crate].x+'px';
-            document.getElementById("crate_" + hitted_crate).style.top = 64*crates[hitted_crate].y+'px';
+            animate_move(document.getElementById("crate_" + hitted_crate), 64*crates[hitted_crate].x, 64*crates[hitted_crate].y, 4, 4)
             check_end_game();
         }
     }
-    
+
     hero = hero.add(vector)
-    hero_element.style.left = 64 * hero.x + 'px';
-    hero_element.style.top = 64 * hero.y + 'px';
+    animate_move(hero_element, 64 * hero.x, 64 * hero.y, 4, 4)
 }
 
 var game_element = document.getElementById("game");
@@ -80,6 +71,17 @@ var map = new Map(grid);
 var hero = null;
 var crates = [];
 var end_points = [];
+
+var hero_direction = 'left';
+
+var hero_assets = {
+    'left': ['assets/Character1.png', 'assets/Character10.png'],
+    'right': ['assets/Character2.png', 'assets/Character3.png'],
+    'up': ['assets/Character8.png', 'assets/Character9.png'],
+    'down': ['assets/Character5.png', 'assets/Character6.png']
+}
+
+var hero_assets_index = 0;
 
 for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
@@ -123,17 +125,39 @@ hero_element.style.top = 64*hero.y+'px';
 game_element.appendChild(hero_element)
 
 function animation() {
+    hero_assets_index = (hero_assets_index + 1) % 2
     let hero = document.getElementById('hero')
-    if(hero.src.includes('assets/Character10.png')){
-        hero.src = 'assets/Character1.png'
-    }else{
-        hero.src = 'assets/Character10.png'
-    }
+    hero.src = hero_assets[hero_direction][hero_assets_index]
 
     setTimeout(animation, 100)
 }
-setTimeout(animation, 200)
 
+function animate_move(element, x, y, delta_x, delta_y){
+    var direction = 1;
+    if(parseInt(element.style.left) != x){
+        if(parseInt(element.style.left) > x)
+            direction = -1;
+        let new_x = parseInt(element.style.left) + delta_x * direction;
+        element.style.left = new_x + 'px';
+    }
+
+    direction = 1;
+    if(parseInt(element.style.top) != y){
+        if(parseInt(element.style.top) > y)
+            direction = -1;
+        let new_y = parseInt(element.style.top) + delta_y * direction;
+        element.style.top = new_y + 'px';
+    }
+    console.log('animate move '+element.style.left+' '+element.style.top);
+    console.log('target '+x+' '+y);
+
+    if(parseInt(element.style.left) == x && parseInt(element.style.top) == y){
+        return;
+    }
+    setTimeout(animate_move, 20, element, x, y, delta_x, delta_y);
+}
+
+animation();
 
 document.addEventListener(
     "keydown",
@@ -142,15 +166,19 @@ document.addEventListener(
 
         switch(keyName){
             case "ArrowUp":
+                hero_direction = 'up';
                 move_hero(new Position(0, -1));
                 break;
             case "ArrowDown":
+                hero_direction = 'down';
                 move_hero(new Position(0, 1));
                 break;
             case "ArrowLeft":
+                hero_direction = 'left';
                 move_hero(new Position(-1, 0));
                 break;
             case "ArrowRight":
+                hero_direction = 'right';
                 move_hero(new Position(1, 0));
                 break;
             default:
