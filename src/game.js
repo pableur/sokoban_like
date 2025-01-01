@@ -75,6 +75,8 @@ function init_game(grid){
                 case 'E':
                     end_points.push(new Position(x, y));
                     break;
+                case '.':
+                    continue;
             }
     
             asset = map.get_cell_asset(new Position(x, y));
