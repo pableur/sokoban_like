@@ -1,0 +1,20 @@
+#ressources{
+    border: 3px solid #676767;
+    border-radius: 30px;
+    padding: 16px;
+
+    div{
+        padding: 10px;
+    }
+
+    div:hover{
+        border: 10px solid #ff0000;
+        border-radius: 30px;
+    }
+}
+
+.selected{
+    border: 3px solid #00ff00;
+    border-radius: 30px;
+    padding: 16px;
+}

@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="editeur.css">
+    </head>
+    <body>
+        <div id="game">
+            <div id="map" style="display: inline-block; vertical-align:top;">
+            </div>
+            <div style="display: inline-block;">
+                <div id="ressources">
+                    <div id="ressource_ground" onclick="select_item('.')"><img src="assets/Ground_Sand.png" alt=""></div>
+                    <div id="ressource_wall" onclick="select_item('#')"><img src="assets/WallRound_Beige.png" alt=""></div>
+                    <div id="ressource_crate" onclick="select_item('C')"><img src="assets/Crate_Brown.png" alt=""></div>
+                    <div id="ressource_endpoint" onclick="select_item('E')"><img src="assets/EndPoint_Red.png" alt=""></div>
+                    <div id="ressource_hero" onclick="select_item('H')"><img src="assets/Character4.png" alt=""></div>
+                </div>
+                <button id="buttonJsCode">Get JS code</button>
+            </div>
+        </div>
+
+        <dialog id="confirmationDialog">
+            <!-- content -->
+            <button aria-label="Close modal" id="buttonCloseX">✖</button>
+            <p id="js_code"></p>
+        </dialog>
+    </body>
+    <script src="src/levels.js"></script>
+    <script src="src/position.js"></script>
+    <script src="src/map.js"></script>
+    <script src="src/editeur.js"></script>
+</html>

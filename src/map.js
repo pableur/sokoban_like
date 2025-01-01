@@ -17,13 +17,15 @@ class Map {
     get_cell_asset(pos) {
         let cell = this.get(pos);
         if(cell === '#'){
-            return 'assets/WallRound_Beige.png'
+            return 'assets/WallRound_Beige.png';
         }else if(cell === 'E'){
-            return 'assets/EndPoint_Red.png'
+            return 'assets/EndPoint_Red.png';
         }else if(cell === 'C'){
-            return 'assets/Crate_Brown.png'
+            return 'assets/Crate_Brown.png';
+        }else if(cell === 'H'){
+            return 'assets/Character4.png';
         }else{
-            return 'assets/Ground_Sand.png'
+            return 'assets/Ground_Sand.png';
         }
     }
 
