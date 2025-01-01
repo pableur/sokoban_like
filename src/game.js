@@ -1,14 +1,3 @@
-var grid = [
-    ['#','#','#','#','#','#','#','#'],
-    ['#','.','E','.','.','.','.','#'],
-    ['#','C','C','.','.','.','.','#'],
-    ['#','.','C','.','.','.','.','#'],
-    ['#','E','.','.','H','#','.','#'],
-    ['#','.','E','.','.','.','.','#'],
-    ['#','.','.','.','.','.','.','#'],
-    ['#','#','#','#','#','#','#','#'],
-];
-
 function hitt_crate(pos){
     for(let i = 0; i < crates.length; i++){
         if(crates[i].equals(pos)){
@@ -37,6 +26,10 @@ function check_end_game(){
 }
 
 function move_hero(vector){
+    if(invert_direction){
+        vector.x = -vector.x;
+        vector.y = -vector.y;
+    }
     let next_pos = hero.add(vector);
     let check_empty_pos = next_pos.add(vector)
 
@@ -63,14 +56,68 @@ function move_hero(vector){
     animate_move(hero_element, 64 * hero.x, 64 * hero.y, 4, 4)
 }
 
+function init_game(grid){
+    map = new Map(grid);
+    crates = [];
+    end_points = [];
+
+    map_element.innerHTML = '';
+
+    for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) {
+            switch (map.get(new Position(x, y)) ) {
+                case 'H':
+                    hero = new Position(x, y);
+                    continue;
+                case 'C':
+                    crates.push(new Position(x, y));
+                    break;
+                case 'E':
+                    end_points.push(new Position(x, y));
+                    break;
+            }
+    
+            asset = map.get_cell_asset(new Position(x, y));
+            var block = document.createElement("img")
+            if(map.get(new Position(x, y)) == 'C'){
+                block.id = "crate_" + (crates.length - 1)
+                block.classList.add('crate');
+            }
+            else{
+                block.id = "map_" + x + "_" + y
+            }
+            block.classList.add('asset');
+            block.style.left = 64*x+'px';
+            block.style.top = 64*y+'px';
+            block.src = asset
+            map_element.appendChild(block)
+        }
+    }
+
+    map_element.style.width = 64*map.width+'px';
+    map_element.style.height = 64*map.height+'px';
+
+    if(hero_element == null){
+        hero_element = document.createElement("img")
+        hero_element.id = "hero"
+        hero_element.classList.add('asset');
+    }
+    hero_element.style.left = 64*hero.x+'px';
+    hero_element.style.top = 64*hero.y+'px';
+    game_element.appendChild(hero_element);
+}
+
 var game_element = document.getElementById("game");
 var map_element = document.getElementById("map");
 
 
-var map = new Map(grid);
+var map = null;
 var hero = null;
+var hero_element = null;
 var crates = [];
 var end_points = [];
+var in_animation = false;
+var invert_direction = false;
 
 var hero_direction = 'left';
 
@@ -82,47 +129,7 @@ var hero_assets = {
 }
 
 var hero_assets_index = 0;
-
-for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
-        switch (map.get(new Position(x, y)) ) {
-            case 'H':
-                hero = new Position(x, y);
-                continue;
-            case 'C':
-                crates.push(new Position(x, y));
-                break;
-            case 'E':
-                end_points.push(new Position(x, y));
-                break;
-        }
-
-        asset = map.get_cell_asset(new Position(x, y));
-        var block = document.createElement("img")
-        if(map.get(new Position(x, y)) == 'C'){
-            block.id = "crate_" + (crates.length - 1)
-            block.classList.add('crate');
-        }
-        else{
-            block.id = "map_" + x + "_" + y
-        }
-        block.classList.add('asset');
-        block.style.left = 64*x+'px';
-        block.style.top = 64*y+'px';
-        block.src = asset
-        map_element.appendChild(block)
-    }
-}
-
-map_element.style.width = 64*map.width+'px';
-map_element.style.height = 64*map.height+'px';
-
-var hero_element = document.createElement("img")
-hero_element.id = "hero"
-hero_element.classList.add('asset');
-hero_element.style.left = 64*hero.x+'px';
-hero_element.style.top = 64*hero.y+'px';
-game_element.appendChild(hero_element)
+init_game(level_1);
 
 function animation() {
     hero_assets_index = (hero_assets_index + 1) % 2
@@ -133,6 +140,7 @@ function animation() {
 }
 
 function animate_move(element, x, y, delta_x, delta_y){
+    in_animation = true;
     var direction = 1;
     if(parseInt(element.style.left) != x){
         if(parseInt(element.style.left) > x)
@@ -152,6 +160,7 @@ function animate_move(element, x, y, delta_x, delta_y){
     console.log('target '+x+' '+y);
 
     if(parseInt(element.style.left) == x && parseInt(element.style.top) == y){
+        in_animation = false;
         return;
     }
     setTimeout(animate_move, 20, element, x, y, delta_x, delta_y);
@@ -163,7 +172,8 @@ document.addEventListener(
     "keydown",
     (event) => {
         const keyName = event.key;
-
+        if(in_animation)
+            return;
         switch(keyName){
             case "ArrowUp":
                 hero_direction = 'up';
@@ -195,6 +205,7 @@ const buttonOk = document.querySelector("#buttonOk");
 const buttonClose = document.querySelector("#buttonClose");
 const buttonCloseX = document.querySelector("#buttonCloseX");
 const result = document.querySelector("#result");
+const buttonRetry = document.querySelector("#buttonRetry");
 
 
 function handleClose() {
@@ -205,9 +216,13 @@ function handleClose() {
 // button1
 buttonOk.addEventListener("click", () => {
   confirmationDialog.close();
-  result.textContent = "Result: <dialog> was confirmed! (click event)";
-  // your confirm logic here...
+  current_level += 1;
+  init_game(levels[current_level]);
 });
+
+buttonRetry.addEventListener("click", () => {
+    init_game(levels[current_level]);
+  });
 
 // button2
 buttonClose.addEventListener("click", () => {
