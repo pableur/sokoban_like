@@ -54,8 +54,13 @@ function move_hero(vector){
     animate_move(hero_element, 64 * hero.x, 64 * hero.y, 4, 4)
 }
 
-function init_game(grid){
-    map = new Map(grid);
+function init_game(level){
+    // set url 
+    var href = new URL(location.href);
+    href.searchParams.set('level', level);
+    history.pushState({}, "", href);
+
+    map = new Map(levels[level]);
     crates = [];
     end_points = [];
 
@@ -167,13 +172,12 @@ var hero_assets = {
 for (const level of levels) {
     let level_document = document.getElementById('levels');
     let index = levels.indexOf(level);
-    level_document.innerHTML += '<button onclick="current_level='+index+'; init_game(levels['+index+'])">Level '+index+'</button>';
-    level_document.innerHTML += '<button onclick="current_level='+index+'; init_game(levels['+index+']); load_solution(solutions['+index+'])">Solution '+index+'</button>';
+    level_document.innerHTML += '<button onclick="init_game('+index+')">Level '+index+'</button>';
+    level_document.innerHTML += '<button onclick="init_game('+index+'); load_solution(solutions['+index+'])">Solution '+index+'</button>';
     level_document.innerHTML += '</br>';
 }
 
 var hero_assets_index = 0;
-init_game(level_1);
 
 function animation() {
     hero_assets_index = (hero_assets_index + 1) % 2;
@@ -212,7 +216,20 @@ function add_user_input(input){
     document.getElementById('user_input').textContent += input;
 }
 
-animation();
+window.onload = function () {
+
+    const queryString = window.location.search;
+    console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    if(!urlParams.has('level')){
+        init_game(0);
+    }else{
+        init_game(parseInt(urlParams.get('level')));
+    }
+
+    animation();
+
+}
 
 document.addEventListener(
     "keydown",
@@ -268,11 +285,11 @@ function handleClose() {
 buttonOk.addEventListener("click", () => {
   confirmationDialog.close();
   current_level += 1;
-  init_game(levels[current_level]);
+  init_game(current_level);
 });
 
 buttonRetry.addEventListener("click", () => {
-    init_game(levels[current_level]);
+    init_game(current_level);
   });
 
 
