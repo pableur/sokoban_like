@@ -60,7 +60,7 @@ function init_game(grid){
     end_points = [];
 
     map_element.innerHTML = '';
-    document.getElementById('user_input').textContent = '';
+    document.getElementById('user_input').textContent = 'User inputs : ';
 
     for (let y = 0; y < map.height; y++) {
         for (let x = 0; x < map.width; x++) {

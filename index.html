@@ -7,23 +7,23 @@
         <div id="game">
             <div id="map" style="display: inline-block; vertical-align:top;">
             </div>
-            <div style="display: inline-block;">
-                <button id="buttonRetry">Retry</button>
-            </div>
-            <div style="display: inline-block;">
+            <div style="display: inline-block; float: inline-end; width: 304px">
                 <div id="levels">
+                </div>
+                <button id="buttonRetry">Retry</button>
+
+                <div style="margin-top: 10px" id="inputs">
+                    <div id="user_input">
+                    </div>
+                    <div>
+                        <input type="text" id="manual_user_input" placeholder="Enter your command" size="auto" style="width:  100%;"></br>
+                        <button id="submit_user_input">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div style="margin-top: 10px">
-            <div id="user_input">
-            </div>
-            <div>
-                <input type="text" id="manual_user_input" placeholder="Enter your command" size="100">
-                <button id="submit_user_input">Submit</button>
-            </div>
-        </div>
+        
         <dialog id="confirmationDialog">
             <!-- content -->
             <button aria-label="Close modal" id="buttonCloseX">✖</button>

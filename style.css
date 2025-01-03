@@ -1,3 +1,7 @@
+body{
+    background-color: #f0f0f0;
+}
+
 .asset{
     position: absolute;
 }
@@ -11,6 +15,43 @@
     z-index: -1;
     background-color: #ece3ce;
     margin: -8px;
+    margin-right: 20px;
+}
+
+#levels{
+    border-radius: 20px;
+    padding: 1rem;
+    border: 2px solid #3c3b3b;
+    background-color: #b9b9b9;
+
+    button{
+        background-color: #efefef;
+        margin: 0.5rem;
+    }
+
+    button:hover{
+        background-color: #ffffff;
+    }
+}
+
+#buttonRetry{
+    width: 80%;
+    margin: auto;
+    display: block;
+    margin-top: 10px;
+}
+
+#inputs{
+    border-radius: 20px;
+    padding: 1rem;
+    border: 2px solid #3c3b3b;
+    background-color: #b9b9b9;
+}
+
+#submit_user_input{
+    width: 100%;
+    margin: 0;
+    margin-top: 10px;
 }
 
 div{
